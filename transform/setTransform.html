@@ -60,14 +60,18 @@ canvas {
 	};
 	var setTransform = function (ctx) {
 		if ($('m12').value == 1 && $('m21').value == 1) return;
-		ctx.setTransform(
-			$('m11').value || 1,
-			$('m12').value || 0,
-			$('m21').value || 0,
-			$('m22').value || 1,
-			$('dx').value || 0,
-			$('dy').value || 0
-		);
+		try {
+			ctx.setTransform(
+				$('m11').value || 1,
+				$('m12').value || 0,
+				$('m21').value || 0,
+				$('m22').value || 1,
+				$('dx').value || 0,
+				$('dy').value || 0
+			);
+		} catch (e) {
+			alert(e);
+		}
 	};
 	var draw = function () {
 		var ctx = $('canvas').getContext('2d');
