@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Transformation test</title>
+		<style type="text/css">
+html {
+	background : white;
+	color      : black;
+}
+input[type=text] {
+	border : none;
+	border-bottom : 1px dashed #999;
+	font : 15px monospace;
+	margin : 2px;
+	width : 4em;
+	text-align : right;
+}
+canvas {
+	border : 1px dashed #393;
+	margin : 4px;
+}
+		</style>
+	</head>
+	<body>
+		<code>context.setTransform(
+		<input type="text" id="m11" title="m11" value="1" />, 
+		<input type="text" id="m12" title="m12" value="0" />,
+		<input type="text" id="m21" title="m21" value="0" />,
+		<input type="text" id="m22" title="m22" value="1" />,
+		<input type="text" id="dx" title="dx" value="100" />,
+		<input type="text" id="dy" title="dy" value="100" />)</code>
+		<input type="submit" id="redraw" value="redraw" /> <br />
+		<canvas id="canvas" width="640" height="400" />
+	</body>
+	<script type="text/javascript">
+(function (undefined) {
+	var $ = function (id) {
+		return document.getElementById(id);
+	};
+	var drawCells = function (ctx, size) {
+		size = size || 100;
+		var canv = ctx.canvas;
+		var w = ctx.canvas.width, h = ctx.canvas.height;
+		var count = Math.ceil(Math.max(w, h) / size);
+		ctx.save();
+		ctx.beginPath();
+		do {
+			var line = count * size;
+			ctx.moveTo(line, 0);
+			ctx.lineTo(line, h);
+			ctx.moveTo(0, line);
+			ctx.lineTo(w, line);
+		} while (count--);
+		ctx.closePath();
+		ctx.lineWidth = 0.3;
+		ctx.strokeStyle = '#090';
+		ctx.stroke();
+		ctx.restore();
+	};
+	var setTransform = function (ctx) {
+		if ($('m12').value == 1 && $('m21').value == 1) return;
+		ctx.setTransform(
+			$('m11').value || 1,
+			$('m12').value || 0,
+			$('m21').value || 0,
+			$('m22').value || 1,
+			$('dx').value || 0,
+			$('dy').value || 0
+		);
+	};
+	var draw = function () {
+		var ctx = $('canvas').getContext('2d');
+		ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+		drawCells(ctx, 80);
+		ctx.save();
+		setTransform(ctx);
+		ctx.drawImage(img, 0, 0);
+		ctx.restore();
+	};
+	var img = new Image;
+	img.src = 'transform.png';
+	img.onload = draw;
+	$('redraw').onclick = draw;
+})();
+	</script>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Transformation test</title>
+		<style type="text/css">
+html {
+	background : white;
+	color      : black;
+}
+textarea {
+	border : 1px dashed #393;
+	font   : 15px monospace;
+	margin : 4px;
+	vertical-align : top;
+}
+canvas {
+	border : 1px dashed #393;
+	margin : 4px;
+	float  : left;
+}
+		</style>
+	</head>
+	<body>
+		<code>ctx.setTransform(0.866, -0.5, 0.866, 0.5, 0, 200);</code><br />
+		<canvas id="canvas" width="640" height="400"></canvas>
+		Map code (0-3): <br />
+		<textarea rows="10" cols="10" id="mapCode">12023
+13101
+32131
+01321
+13100</textarea> <br />
+		<label for="isometric">Isometric : </label><input type="checkbox" id="isometric" /><br />
+		<input type="submit" id="redraw" value="redraw" />
+		
+	</body>
+	<script type="text/javascript">
+(function (undefined) {
+	var $ = function (id) {
+		return document.getElementById(id);
+	};
+	var drawCells = function (ctx, size) {
+		size = size || 100;
+		var canv = ctx.canvas;
+		var w = ctx.canvas.width, h = ctx.canvas.height;
+		var count = Math.ceil(Math.max(w, h) / size);
+		ctx.save();
+		ctx.beginPath();
+		do {
+			var line = count * size;
+			ctx.moveTo(line, 0);
+			ctx.lineTo(line, h);
+			ctx.moveTo(0, line);
+			ctx.lineTo(w, line);
+		} while (count--);
+		ctx.closePath();
+		ctx.lineWidth = 0.3;
+		ctx.strokeStyle = '#090';
+		ctx.stroke();
+		ctx.restore();
+	};
+	var drawMap = function (ctx) {
+		var code  = $('mapCode').value;
+		var lines = code.split('\n');
+		for (var y = lines.length; y--;) {
+			var line = lines[y].split('');
+			for (var x = line.length; x--;) {
+				var sprite = Number(line[x]);
+				sprite = sprite > 3 || sprite < 0 ? 0 : sprite;
+				ctx.drawImage(img,
+					128*sprite, 0, 128, 128,
+					64*x, 64*y, 64, 64
+				);
+			}
+		}		
+	};
+	var draw = function () {
+		var ctx = $('canvas').getContext('2d');
+		ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+		drawCells(ctx, 80);
+		ctx.save();
+		if ($('isometric').checked) {
+			ctx.setTransform(0.866, -0.5, 0.866, 0.5, 0, 200);
+		}
+		drawMap(ctx);
+		ctx.restore();
+	};
+	var img = new Image;
+	img.src = 'tiles.jpg';
+	img.onload = draw;
+	$('redraw').onclick = draw;
+})();
+	</script>
+</html>

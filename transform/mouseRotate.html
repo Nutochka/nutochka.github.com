@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Transformation test</title>
+		<style type="text/css">
+html {
+	background : white;
+	color      : black;
+}
+input[type=text] {
+	border : none;
+	border-bottom : 1px dashed #999;
+	font : 15px monospace;
+	margin : 2px;
+	width : 4em;
+	text-align : right;
+}
+canvas {
+	border : 1px dashed #393;
+	margin : 4px;
+}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas" width="640" height="400" />
+	</body>
+	<script type="text/javascript">
+(function (undefined) {
+	var $ = function (id) {
+		return document.getElementById(id);
+	};
+	var drawCells = function (ctx, size) {
+		size = size || 100;
+		var canv = ctx.canvas;
+		var w = ctx.canvas.width, h = ctx.canvas.height;
+		var count = Math.ceil(Math.max(w, h) / size);
+		ctx.save();
+		ctx.beginPath();
+		do {
+			var line = count * size;
+			ctx.moveTo(line, 0);
+			ctx.lineTo(line, h);
+			ctx.moveTo(0, line);
+			ctx.lineTo(w, line);
+		} while (count--);
+		ctx.closePath();
+		ctx.lineWidth = 0.3;
+		ctx.strokeStyle = '#090';
+		ctx.stroke();
+		ctx.restore();
+	};
+	var draw = function (x, y) {
+		var ctx = $('canvas').getContext('2d');
+		ctx.clearRect(0,0,ctx.canvas.width, ctx.canvas.height);
+		drawCells(ctx, 80);
+		ctx.save();
+		ctx.translate(280, 200);
+		x && ctx.rotate(Math.atan2(y - 200, x - 280) + Math.PI/2);
+		ctx.drawImage(img, -25, -25);
+		ctx.restore();
+	};
+	var img = new Image;
+	img.src = 'transform.png';
+	img.onload = function () { draw() };
+	$('canvas').onmousemove = function (e) {
+		var k = [];
+		for (var i in e.target) k.push(i);
+		draw(
+			e.pageX - e.target.offsetLeft,
+			e.pageY - e.target.offsetTop
+		);
+	};
+})();
+	</script>
+</html>
